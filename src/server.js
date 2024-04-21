@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const wordpressDetector = require('./wordpressDetector'); // Функция для определения, используется ли WordPress
+const wordpressDetector = require('./wordpressDetector');
 
 const app = express();
 app.use(express.json());
@@ -12,6 +12,7 @@ app.post('/check-wordpress', async (req, res) => {
     const isWordPress = await wordpressDetector(url);
     res.json({ isWordPress });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });

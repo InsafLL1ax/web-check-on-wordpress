@@ -8,10 +8,18 @@ function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!url.trim()) {
+      setError('URL cannot be empty');
+      return;
+    }
     try {
       const response = await axios.post('http://localhost:3001/check-wordpress', { url });
-      setIsWordPress(response.data.isWordPress);
-      setError('');
+      if (response.data.hasOwnProperty('isWordPress')) {
+        setIsWordPress(response.data.isWordPress);
+        setError('');
+      } else {
+        throw new Error('Invalid response from server');
+      }
     } catch (error) {
       setError('Failed to check WordPress');
       console.error(error);
