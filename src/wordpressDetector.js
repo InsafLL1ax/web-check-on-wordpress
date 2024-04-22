@@ -3,15 +3,7 @@ const cheerio = require('cheerio');
 
 async function wordpressDetector(url) {
   try {
-    // Отправляем HEAD запрос к указанному URL, чтобы получить только заголовки ответа
-    const response = await axios.head(url);
-
-    // Проверяем заголовок "x-powered-by" на наличие указания на WordPress
-    if (response.headers['x-powered-by'] && response.headers['x-powered-by'].toLowerCase().includes('wordpress')) {
-      return true;
-    }
-
-    // Если заголовок не содержит указание на WordPress, загружаем HTML страницы для дополнительной проверки
+    // Отправляем GET запрос к указанному URL для загрузки всего HTML содержимого страницы
     const htmlResponse = await axios.get(url);
     const html = htmlResponse.data;
 
@@ -21,10 +13,19 @@ async function wordpressDetector(url) {
     // Проверяем наличие мета-тега "generator", характерного для WordPress
     const generatorMetaTag = $('meta[name="generator"]');
     if (generatorMetaTag && generatorMetaTag.attr('content') && generatorMetaTag.attr('content').toLowerCase().includes('wordpress')) {
+      console.log('WordPress detected from meta generator tag');
+      return true;
+    }
+
+    // Проверяем наличие определенного класса HTML, характерного для WordPress
+    const wordpressClass = $('.wp-content');
+    if (wordpressClass.length > 0) {
+      console.log('WordPress detected from wp-content class');
       return true;
     }
 
     // Если ни один из признаков не найден, считаем, что сайт не реализован на WordPress
+    console.log('WordPress not detected');
     return false;
   } catch (error) {
     throw new Error('Failed to fetch URL');
