@@ -14,6 +14,7 @@ function App() {
     }
     try {
       const response = await axios.post('http://localhost:3001/check-wordpress', { url });
+      console.log('Response from server:', response.data); // Выводим данные ответа в консоль
       if (response.data.hasOwnProperty('isWordPress')) {
         setIsWordPress(response.data.isWordPress);
         setError('');
