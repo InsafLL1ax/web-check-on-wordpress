@@ -6,6 +6,10 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+app.get('/', async (req, res) => {
+  res.send('hello world');
+})
+
 app.post('/check-wordpress', async (req, res) => {
   const { url } = req.body;
   try {

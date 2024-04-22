@@ -2,19 +2,24 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 
 async function wordpressDetector(url) {
+  console.log('run function wordpressDetector!')
   try {
     // Отправляем GET запрос к указанному URL для загрузки всего HTML содержимого страницы
     const htmlResponse = await axios.get(url);
     const html = htmlResponse.data;
-
+    
     // Используем Cheerio для загрузки HTML кода
     const $ = cheerio.load(html);
 
+    var title = $('meta[name="viewport"]').attr('content')
     // Проверяем наличие мета-тега "generator" с содержимым, указывающим на WordPress
-    const generatorMetaTag = $('meta[name="generator"]');
+    const generatorMetaTag = $('meta[name="viewport"]');
+
+    console.log('meta2',title);
     if (generatorMetaTag.length > 0) {
       const content = generatorMetaTag.attr('content');
-      if (content && content.toLowerCase().includes('wordpress')) {
+      console.log('meta3', content);
+      if (content && content.toLowerCase().includes('initial-scale=1')) {
         console.log('WordPress detected from meta generator tag');
         return true;
       }
