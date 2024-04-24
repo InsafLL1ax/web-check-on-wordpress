@@ -4,35 +4,37 @@ const cheerio = require('cheerio');
 async function wordpressDetector(url) {
   console.log('run function wordpressDetector!')
   try {
-    // Отправляем GET запрос к указанному URL для загрузки всего HTML содержимого страницы
     const htmlResponse = await axios.get(url);
     const html = htmlResponse.data;
-    
-    // Используем Cheerio для загрузки HTML кода
     const $ = cheerio.load(html);
 
-    var title = $('meta[name="viewport"]').attr('content')
-    // Проверяем наличие мета-тега "generator" с содержимым, указывающим на WordPress
-    const generatorMetaTag = $('meta[name="viewport"]');
+   // var title = $('meta[name="generator"]').attr('content')
+    const generatorMetaTag = $('meta[name="generator"]');
+   // console.log('meta2', title);
 
-    console.log('meta2',title);
+    // Проверяем наличие мета тега generator, характерного для WordPress
     if (generatorMetaTag.length > 0) {
       const content = generatorMetaTag.attr('content');
       console.log('meta3', content);
-      if (content && content.toLowerCase().includes('initial-scale=1')) {
-        console.log('WordPress detected from meta generator tag');
-        return true;
-      }
+      console.log('WordPress detected from meta generator tag');
+      return true;
+      // if (content && content.toLowerCase().includes('Wordpress')) {
+      // }
     }
 
     // Проверяем наличие определенных классов HTML, характерных для WordPress
-    const wordpressClasses = ['.wp-content', '.wp-block'];
-    for (const wordpressClass of wordpressClasses) {
-      const elements = $(wordpressClass);
-      if (elements.length > 0) {
-        console.log(`WordPress detected from ${wordpressClass}`);
-        return true;
-      }
+    const hasWPContent = $('script[src*=wp-content]');
+    const hasWPBlock = $('script[src*=wp-block]');
+
+    if (hasWPContent.length > 0) {
+      console.log('WordPress content detected (wp-content)');
+     // console.log(hasWPContent);
+      return true;
+    }
+    if (hasWPBlock.length > 0) {
+      console.log('WordPress block detected (wp-block)');
+     // console.log(hasWPContent);
+      return true;
     }
 
     // Если ни один из признаков не найден, считаем, что сайт не реализован на WordPress
@@ -45,3 +47,5 @@ async function wordpressDetector(url) {
 }
 
 module.exports = wordpressDetector;
+
+

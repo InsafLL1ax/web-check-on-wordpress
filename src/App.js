@@ -1,42 +1,46 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import "./App.css"
 
 function App() {
   const [url, setUrl] = useState('');
+  const [loading, setLoading] = useState(false);
   const [isWordPress, setIsWordPress] = useState(null);
-  const [error, setError] = useState('');
+  const [error, setError] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     if (!url.trim()) {
-      setError('URL cannot be empty');
-      return;
+      setError(true);
     }
     try {
       const response = await axios.post('http://localhost:3001/check-wordpress', { url });
       console.log('Response from server:', response.data); // Выводим данные ответа в консоль
       if (response.data.hasOwnProperty('isWordPress')) {
         setIsWordPress(response.data.isWordPress);
-        setError('');
+        setError(false);
       } else {
         throw new Error('Invalid response from server');
       }
     } catch (error) {
-      setError('Failed to check WordPress');
-      console.error(error);
+      setError(true);
     }
+    setLoading(false);
   };
 
   return (
-    <div>
+    <div className='header_block'>
       <h1>WordPress Detector</h1>
       <form onSubmit={handleSubmit}>
-        <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Enter URL" />
-        <button type="submit">Check</button>
+        <input className='header_block_string' type="text" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Enter URL" />
+        <button className='header_block_button' type="submit">Check</button>
       </form>
-      {error && <p>{error}</p>}
-      {isWordPress !== null && (
-        <p>{isWordPress ? 'This site is using WordPress' : 'This site is not using WordPress'}</p>
+     {loading && <p>Loading...</p>} 
+      {!loading && error && <p className='header_block_error'>Failed to check WordPress <br /> (the site doesn"t open) <br /> (or site is incorrect)</p>} 
+      {!loading  && !error && isWordPress !== null && (
+        <p className={isWordPress ? 'using_wordpress' : 'non_using_wordpress'}>
+        {isWordPress ? 'This site is using WordPress' : 'This site is not using WordPress'}</p>
       )}
     </div>
   );
