@@ -14,8 +14,8 @@ async function wordpressDetector(url) {
 
     // Проверяем наличие мета тега generator, характерного для WordPress
     if (generatorMetaTag.length > 0) {
-      const content = generatorMetaTag.attr('content');
-      console.log('meta3', content);
+      //const content = generatorMetaTag.attr('content');
+     // console.log('meta3', content);
       console.log('WordPress detected from meta generator tag');
       return true;
       // if (content && content.toLowerCase().includes('Wordpress')) {
@@ -41,7 +41,7 @@ async function wordpressDetector(url) {
     console.log('WordPress not detected');
     return false;
   } catch (error) {
-    console.error('Failed to fetch URL:', error);
+   // console.error('Failed to fetch URL:', error);
     throw new Error('Failed to fetch URL');
   }
 }
